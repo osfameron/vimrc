@@ -114,14 +114,28 @@ fi
 
 alias tmux="TERM=xterm-256color tmux"
 
-function hack-perl { 
-    TERM=xterm-256color
-    tmux new-session "vim $*" \; splitw -v -l 10 're.pl'   \; select-pane -U
+VIM=`which vim`
+function vim {
+    if test "$VIM_REMOTE"; then
+        $VIM --servername $VIM_REMOTE --remote $*
+    else
+        $VIM $*
+    fi
 }
+
 function hack-django { 
-    TERM=xterm-256color
     source ./virtualenv-sayit/bin/activate
-    tmux new-session "vim $*" \; splitw -v -l 10 'python ./manage.py shell'   \; select-pane -U
+    _do_hack djan- 'python ./manage.py shell' "$*"
+}
+function hack-perl { 
+    _do_hack perl- 're.pl' "$*"
+}
+
+function _do_hack {
+    TERM=xterm-256color
+    TEMP=$(tempfile -p $1)
+    _VIM_REMOTE=$(basename $TEMP) 
+    VIM_REMOTE=$_VIM_REMOTE tmux new-session "vim --servername $_VIM_REMOTE $3" \; splitw -v -l 10 "$2" \; splitw -h \; set-environment -g VIM_REMOTE $_VIM_REMOTE \; select-pane -U
 }
 
 eval $(perl -I$HOME/perl5/lib/perl5 -Mlocal::lib)

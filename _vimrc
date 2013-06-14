@@ -118,7 +118,7 @@ let g:slime_target = "tmux"
 let g:slime_default_config = {"socket_name": "default", "target_pane": "1"}
 
 " TODO plugins I haven't actually played with yet
-Bundle "petdance/vim-perl"
+Bundle "vim-perl/vim-perl"
 Bundle "jQuery"
 
 " Allow unsaved changes in buffers
