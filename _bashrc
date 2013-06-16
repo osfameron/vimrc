@@ -117,27 +117,41 @@ alias tmux="TERM=xterm-256color tmux"
 VIM=`which vim`
 function vim {
     if test "$VIM_REMOTE"; then
-        $VIM --servername $VIM_REMOTE --remote $*
+        $VIM --servername $VIM_REMOTE --remote-silent $*
     else
         $VIM $*
     fi
 }
 
+function hack-sayit { 
+    cd ~/work/MySoc/sayit
+    source ~/work/MySoc/sayit/virtualenv-sayit/bin/activate
+    _do_hack sayi- 'python ./manage.py shell' "$*"
+}
 function hack-django { 
-    source ./virtualenv-sayit/bin/activate
+    workon $(basename $(pwd))
     _do_hack djan- 'python ./manage.py shell' "$*"
 }
 function hack-perl { 
     _do_hack perl- 're.pl' "$*"
+}
+function hack-haskell { 
+    _do_hack hask- 'ghci' "$*"
 }
 
 function _do_hack {
     TERM=xterm-256color
     TEMP=$(tempfile -p $1)
     _VIM_REMOTE=$(basename $TEMP) 
-    VIM_REMOTE=$_VIM_REMOTE tmux new-session "vim --servername $_VIM_REMOTE $3" \; splitw -v -l 10 "$2" \; splitw -h \; set-environment -g VIM_REMOTE $_VIM_REMOTE \; select-pane -U
+    # VIM_REMOTE=$_VIM_REMOTE tmux new-session "vim --servername $_VIM_REMOTE $3" \; splitw -v -l 10 "$2" \; splitw -h \; set-environment -g VIM_REMOTE $_VIM_REMOTE \; select-pane -U
+    VIM_REMOTE=$_VIM_REMOTE tmux new-session "vim --servername $_VIM_REMOTE $3" \; splitw -v -l 10 "$2" \; splitw -h \; select-pane -U
 }
 
 eval $(perl -I$HOME/perl5/lib/perl5 -Mlocal::lib)
 export PERL5LIB=./lib:$PERL5LIB
 export PATH=~/bin/jdk1.7.0_10/bin/:~/bin:~/.cabal/bin:$PATH
+
+# virtualenvwrapper config
+export WORKON_HOME=~/Envs
+mkdir -p $WORKON_HOME
+source /usr/local/bin/virtualenvwrapper.sh

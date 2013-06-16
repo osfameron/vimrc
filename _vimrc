@@ -1,8 +1,15 @@
 " make this file easy to edit and source
-map <Leader>v :e ~/.vimrc<CR>
-map <Leader>V :so ~/.vimrc<CR>
+map <Leader>v :e  $MYVIMRC<CR>
+map <Leader>V :so $MYVIMRC<CR>
+augroup AutoReloadVimRC
+  au!
+  au BufWritePost $MYVIMRC nested so $MYVIMRC 
+  " nested required to avoid breaking Powerline
+augroup END
 
 " basics
+" set scrolloff=3 " nice for code, but not so nice for help
+set cursorline
 set expandtab
 set shiftwidth=4
 set tabstop=4
@@ -15,10 +22,39 @@ set splitright
 set nocompatible   " Disable vi-compatibility
 set laststatus=2   " Always show the statusline
 set encoding=utf-8 " Necessary to show Unicode glyphs
+set nojoinspaces
+
+" indicator chars
+set listchars=tab:▸\ ,trail:•,extends:❯,precedes:❮,nbsp:⍽,eol:↵
+set showbreak=↪\
 
 " set256colours
 if $TERM == "xterm-256color" || $TERM == "screen-256color" || $COLORTERM == "gnome-terminal"
   set t_Co=256
+endif
+
+func! WordProcessorMode()
+    setlocal formatoptions=t1
+    setlocal textwidth=80
+    map <buffer> j gj
+    map <buffer> k gk
+    setlocal smartindent
+    setlocal spell spelllang=en_us
+    setlocal noexpandtab
+    setlocal nocursorline
+endfu
+
+if has("autocmd")
+  " Avoid showing trailing whitespace when in insert mode
+  au InsertEnter * :set listchars-=trail:•
+  au InsertLeave * :set listchars+=trail:•
+
+  " In Makefiles, use real tabs, not tabs expanded to spaces
+  au FileType make set noexpandtab
+
+  au FileType text call WordProcessorMode()
+  au FileType help set nospell
+
 endif
 
 " stop me fat-fingering <F1> for help...
@@ -28,7 +64,7 @@ imap <F1> <ESC>
 " toggle
 map <F4> :set number!<CR>
 map <F5> :set list!<CR>
-set pastetoggle=<F10>
+set pastetoggle=<F3>
 
 " navigate buffers with <C-p> and <C-n>
 map <c-p> :bp<CR>
@@ -73,8 +109,11 @@ let g:ctrlp_custom_ignore = '\v\~$|\.(o|swp|pyc|wav|mp3|ogg|mk4|avi|pdf)$|(^|[/\
 Bundle "scrooloose/syntastic"
 
 " map <C-t> to NERDtree
-Bundle "scrooloose/nerdtree"
-map <C-t> :NERDTreeToggle<CR>
+" Bundle "scrooloose/nerdtree"
+" map <C-t> :NERDTreeToggle<CR>
+map <C-t> :Explore .<CR>
+let g:netrw_list_hide='\v\~$|\.(o|swo|swp|pyc|wav|mp3|ogg|mk4|avi|pdf)$|(^|[/\\])\.(hg|git|bzr)($|[/\\])'
+let g:netrw_liststyle = 3
 
 " Show CSS colours in the right colour
 Bundle "ap/vim-css-color"
@@ -112,15 +151,34 @@ Bundle 'tpope/vim-fugitive'
 " [q ]q etc.
 Bundle 'tpope/vim-unimpaired' 
 
+" Comments
+Bundle 'tpope/vim-repeat'
+Bundle 'tpope/vim-commentary'
+
 " Slime
 Bundle "osfameron/vim-slime"
 let g:slime_target = "tmux"
 let g:slime_default_config = {"socket_name": "default", "target_pane": "1"}
 
-" TODO plugins I haven't actually played with yet
+" Gundo
+Bundle 'Gundo'
+map <C-g> :GundoToggle<CR>
+
+" Syntax stuff
 Bundle "vim-perl/vim-perl"
 Bundle "jQuery"
 
+" Outliner
+Bundle 'vimoutliner/vimoutliner'
+
+" TODO
+" Bundle 'tpope/vim-abolish'
+" Bundle 'camelcasemotion'
+" Bundle 'AutoComplPop'
+" Bundle 'tpope/vim-surround'
+" Bundle 'benmills/vimux' " alternative to slime
+
 " Allow unsaved changes in buffers
 set hidden
+
 filetype plugin indent on
