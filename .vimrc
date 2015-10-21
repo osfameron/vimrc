@@ -1,25 +1,122 @@
 " Use Vundle to manage package installation
+colo desert " temporary, to appease Vundle
+filetype on " workaround for osx to appease git re non-zero exit
 filetype off
-set rtp+=~/.vim/bundle/vundle/
-call vundle#rc()
-Bundle 'gmarik/vundle'
+set rtp+=~/.vim/bundle/Vundle.vim
+call vundle#begin()
+Plugin 'gmarik/vundle'
+
+let localleader='\\'
+
+" Ack
+Plugin 'ack.vim'
+noremap <LocalLeader># "ayiw:Ack <C-r>a<CR>
+vnoremap <LocalLeader># "ay:Ack <C-r>a<CR>
+
+" <C-f> to navigate files, and <C-b> for buffers, <C-m> for MRU
+Plugin 'kien/ctrlp.vim'
+let g:ctrlp_map = '<LocalLeader>f'
+let g:ctrlp_cmd = 'CtrlP'
+map <LocalLeader>b :CtrlPBuffer<CR>
+map <LocalLeader>m :CtrlPMRU<CR>
+let g:ctrlp_custom_ignore = '\v\~$|\.(o|swp|pyc|wav|mp3|ogg|mk4|avi|pdf)$|(^|[/\\])\.(hg|git|bzr)($|[/\\])|__init__\.py'
+let g:ctrlp_working_path_mode = '0' " don't do anything clever with root directory
+" Based on https://gist.github.com/rene-aguirre/3715215 config for ctrlp
+" open files extra files in hidden buffers
+let g:ctrlp_open_multiple_files = '1jr'
+" indexing speed up
+" NB: need to delete files-list to refresh!  This may work with e.g. PIPs
+" dev workflow, but not other projects (otoh, it's bloody fast)
+" perhaps could delegate to a small shell script that recreates if too old?
+
+" if has("unix")
+" \ 1: ['.git', 'cd %s && git ls-files'],
+" \ 'fallback': 'find %s -type f'
+"let g:ctrlp_user_command = {
+"    \ 'types': {
+"        \ 1: ['files-list', 'cat %s/files-list'],
+"        \ 2: ['.git', 'cd %s && git ls-files | tee files-list'],
+"        \ 3: ['.hg', 'hg --cwd %s locate -I . | tee %s/files-list'],
+"        \ 4: ['.svn', 'ack -f %s | tee %s/files-list'],
+"        \ },
+"    \ 'fallback': 'ack -f %s | tee %s/files-list'
+"    \ }
+"else
+"" windows
+"let ctrlp_filter_greps = "".
+"    \ 'grep -iv "\\.\(' .
+"    \ 'exe\|jar\|class\|swp\|swo\|log\|so\|o\|pyc\|jpe?g\|png\|gif\|mo\|po' .
+"    \ 'o\|a\|obj\|com\|dll\|exe\|tmp\|docx\|pdf\|jpg\|png\|vsd\|zip' .
+"    \ '\)$"'
+"let g:ctrlp_user_command = {
+"    \ 'types': {
+"        \ 1: ['.git', "cd %s && git ls-files | " . ctrlp_filter_greps],
+"        \ 2: ['.hg', 'hg --cwd %s locate -I .'],
+"        \ 3: ['.svn', 'svn status %s -q -v --xml | grep -e "\\s*path=" | sed ' . "'" . 's/\\s*path="\(.*\)".*$/\1/' . "' | " . ctrlp_filter_greps],
+"        \ },
+"    \ 'fallback': 'dir %s /-n /b /s /a-d'
+"    \ }
+"endif
+
+" syntastic does basic QuickFix stuffs, and integrates nicely with Powerline
+Plugin 'scrooloose/syntastic'
+" Perl checker is disabled by default, because perl -c has to evaluate code
+let g:syntastic_perl_checkers = ['perl', 'podchecker']
+let g:syntastic_enable_perl_checker = 1
+" just use ENV for following
+" let g:syntastic_perl_lib_path = [ 'lib', 'perllib' ]
+
+map <C-t> :Explore .<CR>
+let g:netrw_list_hide='\v\~$|\.(o|swo|swp|pyc|wav|mp3|ogg|mk4|avi|pdf)$|(^|[/\\])\.(hg|git|bzr)($|[/\\])'
+let g:netrw_liststyle = 3
+
+" Show CSS colours in the right colour
+Plugin 'ap/vim-css-color'
+
+" Matchit for HTML etc.
+Plugin 'tmhedberg/matchit'
+
+" Set colorscheme to the 256 colour version of desert
+Plugin 'flazz/vim-colorschemes'
+Plugin 'Lokaltog/vim-distinguished'
+Plugin 'altercation/vim-colors-solarized'
+
+" the exciting new status line
+Plugin 'Lokaltog/vim-powerline'
+
+" Git
+Plugin 'git.zip'
+Plugin 'tpope/vim-fugitive'
+Plugin 'airblade/vim-gitgutter'
+let g:gitgutter_override_sign_column_highlight = 1
+
+" Syntax stuff
+Plugin 'vim-perl/vim-perl'
+Plugin 'jQuery'
+
+Plugin 'tpope/vim-surround'
+Plugin 'tpope/vim-commentary'
+
+" xquery
+Plugin 'vim-scripts/XQuery-indentomnicompleteftplugin'
+
+call vundle#end() 
+filetype plugin indent on
 
 " make this file easy to edit and source
 map <Leader>v :e  $MYVIMRC<CR>
 map <Leader>V :so $MYVIMRC<CR>
-augroup AutoReloadVimRC
-  au!
-  au BufWritePost $MYVIMRC nested so $MYVIMRC 
-  " nested required to avoid breaking Powerline
-augroup END
+
+map <space> <pagedown>
+map <S-space> <pageup> " won't work in terminal vim
 
 " basics
 " set scrolloff=3 " nice for code, but not so nice for help
 syn on
 set cursorline
 set expandtab
-set shiftwidth=4
-set tabstop=4
+set shiftwidth=2
+set tabstop=2
 set autoindent
 set smarttab
 set visualbell
@@ -55,6 +152,16 @@ if has("autocmd")
 
   au FileType text call WordProcessorMode()
   au FileType help set nospell
+
+  " TODO, put these in a plugin
+  au BufRead,BufNewFile *.t set filetype=perl
+  au BufRead,BufNewFile *.t map <buffer> ,t :!prove -wlv %<CR>
+  au FileType yaml map <buffer> ,t :!prove -wlv t/acceptance.t :: %<CR>
+  augroup AutoReloadVimRC
+    au!
+    au BufWritePost $MYVIMRC nested so $MYVIMRC 
+      " nested required to avoid breaking Powerline
+  augroup END
 endif
 
 " stop me fat-fingering <F1> for help...
@@ -83,91 +190,11 @@ nmap <Leader>q :nohlsearch<CR>
 " sets OSX clipboard automatically
 set clipboard+=unnamed
 
-" Ack
-Bundle "ack.vim"
-noremap <LocalLeader># "ayiw:Ack <C-r>a<CR>
-vnoremap <LocalLeader># "ay:Ack <C-r>a<CR>
-
-" <C-f> to navigate files, and <C-b> for buffers
-Bundle "kien/ctrlp.vim"
-let g:ctrlp_map = '<C-f>'
-let g:ctrlp_cmd = 'CtrlP'
-map <c-b> :CtrlPBuffer<CR>
-let g:ctrlp_custom_ignore = '\v\~$|\.(o|swp|pyc|wav|mp3|ogg|mk4|avi|pdf)$|(^|[/\\])\.(hg|git|bzr)($|[/\\])|__init__\.py'
-
-" syntastic does basic QuickFix stuffs, and integrates nicely with Powerline
-Bundle "scrooloose/syntastic"
-
-" map <C-t> to NERDtree
-" Bundle "scrooloose/nerdtree"
-" map <C-t> :NERDTreeToggle<CR>
-map <C-t> :Explore .<CR>
-let g:netrw_list_hide='\v\~$|\.(o|swo|swp|pyc|wav|mp3|ogg|mk4|avi|pdf)$|(^|[/\\])\.(hg|git|bzr)($|[/\\])'
-let g:netrw_liststyle = 3
-
-" Show CSS colours in the right colour
-Bundle "ap/vim-css-color"
-
-" Matchit for HTML etc.
-Bundle "tmhedberg/matchit"
-
-" Set colorscheme to the 256 colour version of desert
-Bundle "flazz/vim-colorschemes"
-Bundle "Lokaltog/vim-distinguished"
-Bundle "altercation/vim-colors-solarized"
 set background=dark
 if $TERM == "xterm-256color" || $TERM == "screen-256color" || $COLORTERM == "gnome-terminal"
     set t_Co=256
-    set256colours
     let g:solarized_termcolors=256
     colo distinguished
 else
     colo desert
 endif
-
-
-" the exciting new status line
-Bundle "Lokaltog/vim-powerline"
-
-" Git
-Bundle "git.zip"
-Bundle 'tpope/vim-fugitive'
-" Syntax stuff
-Bundle "vim-perl/vim-perl"
-Bundle "jQuery"
-
-" TODO, check these out properly
-" Bundle 'tpope/vim-abolish'
-" Bundle 'camelcasemotion'
-" Bundle 'AutoComplPop'
-" Bundle 'tpope/vim-surround'
-" Bundle 'benmills/vimux' " alternative to slime
-" Bundle 'vimoutliner/vimoutliner'
-" Gundo
-" Bundle 'Gundo'
-" map <C-g> :GundoToggle<CR>
-" Slime
-" Bundle "osfameron/vim-slime"
-" let g:slime_target = "tmux"
-" let g:slime_default_config = {"socket_name": "default", "target_pane": "1"}
-" Comments
-" Bundle 'tpope/vim-repeat'
-" Bundle 'tpope/vim-commentary'
-" [q ]q etc.
-" Bundle 'tpope/vim-unimpaired' 
-" Snippets
-" Bundle "MarcWeber/ultisnips"
-" Bundle "MarcWeber/vim-addon-mw-utils"
-" Bundle "tomtom/tlib_vim"
-" Bundle "osfameron/vim-snippets"
-" let g:UltiSnips = {} " hackety hack
-" let g:UltiSnips.ExpandTrigger="<c-j>"
-" let g:UltiSnips.ListSnippets="<c-l>"
-" let g:UltiSnips.JumpForwardTrigger = "<tab>"
-" let g:UltiSnips.JumpBackwardTrigger = "<s-tab>"
-" :Gist
-" Bundle "mattn/webapi-vim"
-" Bundle "mattn/gist-vim"
-" let g:gist_post_private = 1
-
-filetype plugin indent on
