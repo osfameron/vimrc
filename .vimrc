@@ -204,4 +204,4 @@ endif
 " set showbreak=+++
 set listchars=tab:>\ ,trail:\ 
 set list
-hi SpecialKey ctermbg=1 ctermfg=0 guibg=#FF0000 guifg=#000000
+hi SpecialKey ctermbg=red ctermfg=black guibg=red guifg=black
