@@ -98,7 +98,8 @@ Plugin 'tpope/vim-surround'
 Plugin 'tpope/vim-commentary'
 
 " xquery
-Plugin 'vim-scripts/XQuery-indentomnicompleteftplugin'
+Plugin 'HakimCassimallyBBC/xqueryvim'
+Plugin 'bkad/CamelCaseMotion'
 
 call vundle#end() 
 filetype plugin indent on
@@ -126,10 +127,6 @@ set nocompatible   " Disable vi-compatibility
 set laststatus=2   " Always show the statusline
 set encoding=utf-8 " Necessary to show Unicode glyphs
 set nojoinspaces
-
-" indicator chars
-set listchars=tab:>\ ,trail:_,extends:\\,precedes:%,nbsp:_,eol:$
-set showbreak=+++
 
 func! WordProcessorMode()
     setlocal formatoptions=t1
@@ -159,7 +156,7 @@ if has("autocmd")
   au FileType yaml map <buffer> ,t :!prove -wlv t/acceptance.t :: %<CR>
   augroup AutoReloadVimRC
     au!
-    au BufWritePost $MYVIMRC nested so $MYVIMRC 
+    au BufWritePost $MYVIMRC nested so $MYVIMRC
       " nested required to avoid breaking Powerline
   augroup END
 endif
@@ -190,6 +187,9 @@ nmap <Leader>q :nohlsearch<CR>
 " sets OSX clipboard automatically
 set clipboard+=unnamed
 
+" cute, but breaks copy/paste, need to debug this
+" set mouse=a
+
 set background=dark
 if $TERM == "xterm-256color" || $TERM == "screen-256color" || $COLORTERM == "gnome-terminal"
     set t_Co=256
@@ -198,3 +198,10 @@ if $TERM == "xterm-256color" || $TERM == "screen-256color" || $COLORTERM == "gno
 else
     colo desert
 endif
+
+" indicator chars
+" set listchars=tab:>\ ,trail:_,extends:\\,precedes:%,nbsp:_,eol:$
+" set showbreak=+++
+set listchars=tab:>\ ,trail:\ 
+set list
+hi SpecialKey ctermbg=1 ctermfg=0 guibg=#FFFFFF guifg=#000000
