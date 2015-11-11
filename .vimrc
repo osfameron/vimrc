@@ -114,7 +114,7 @@ map <S-space> <pageup> " won't work in terminal vim
 " basics
 " set scrolloff=3 " nice for code, but not so nice for help
 syn on
-set cursorline
+" set cursorline " obscurse some highlighting
 set expandtab
 set shiftwidth=2
 set tabstop=2
@@ -204,4 +204,4 @@ endif
 " set showbreak=+++
 set listchars=tab:>\ ,trail:\ 
 set list
-hi SpecialKey ctermbg=1 ctermfg=0 guibg=#FFFFFF guifg=#000000
+hi SpecialKey ctermbg=1 ctermfg=0 guibg=#FF0000 guifg=#000000
