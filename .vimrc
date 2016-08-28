@@ -57,6 +57,12 @@ let g:ctrlp_open_multiple_files = '1jr'
 "    \ 'fallback': 'dir %s /-n /b /s /a-d'
 "    \ }
 "endif
+"
+" Haskell stuffs
+Plugin 'Shougo/vimproc.vim' " requires manual `make` afterwards
+Plugin 'eagletmt/ghcmod-vim'
+Plugin 'eagletmt/neco-ghc'
+Plugin 'neovimhaskell/haskell-vim'
 
 " syntastic does basic QuickFix stuffs, and integrates nicely with Powerline
 Plugin 'scrooloose/syntastic'
@@ -65,6 +71,16 @@ let g:syntastic_perl_checkers = ['perl', 'podchecker']
 let g:syntastic_enable_perl_checker = 1
 " just use ENV for following
 " let g:syntastic_perl_lib_path = [ 'lib', 'perllib' ]
+
+" via http://www.stephendiehl.com/posts/vim_2016.html
+map <Leader>s :SyntasticToggleMode<CR>
+set statusline+=%#warningmsg#
+set statusline+=%{SyntasticStatuslineFlag()}
+set statusline+=%*
+let g:syntastic_always_populate_loc_list = 1
+let g:syntastic_auto_loc_list = 0
+let g:syntastic_check_on_open = 0
+let g:syntastic_check_on_wq = 0
 
 map <C-t> :Explore .<CR>
 let g:netrw_list_hide='\v\~$|\.(o|swo|swp|pyc|wav|mp3|ogg|mk4|avi|pdf)$|(^|[/\\])\.(hg|git|bzr)($|[/\\])'
@@ -81,8 +97,11 @@ Plugin 'flazz/vim-colorschemes'
 Plugin 'Lokaltog/vim-distinguished'
 Plugin 'altercation/vim-colors-solarized'
 
-" the exciting new status line
-Plugin 'Lokaltog/vim-powerline'
+" Plugin 'Lokaltog/vim-powerline'
+Plugin 'vim-airline/vim-airline'
+let g:airline#extensions#tabline#enabled = 1
+let g:airline_powerline_fonts = 1
+set guifont=Inconsolata\ for\ Powerline:h18 
 
 " Git
 Plugin 'git.zip'
@@ -100,6 +119,8 @@ Plugin 'tpope/vim-commentary'
 " xquery
 Plugin 'HakimCassimallyBBC/xqueryvim'
 Plugin 'bkad/CamelCaseMotion'
+
+Plugin 'PProvost/vim-markdown-jekyll'
 
 call vundle#end() 
 filetype plugin indent on
@@ -129,14 +150,18 @@ set encoding=utf-8 " Necessary to show Unicode glyphs
 set nojoinspaces
 
 func! WordProcessorMode()
-    setlocal formatoptions=t1
+    setlocal formatoptions-=t
     setlocal textwidth=80
     map <buffer> j gj
     map <buffer> k gk
     setlocal smartindent
-    setlocal spell spelllang=en_us
+    setlocal spell spelllang=en_gb
     setlocal noexpandtab
     setlocal nocursorline
+
+    " didn't use to need these?
+    setlocal wrap
+    setlocal linebreak
 endfu
 
 if has("autocmd")
@@ -148,6 +173,7 @@ if has("autocmd")
   au FileType make set noexpandtab
 
   au FileType text call WordProcessorMode()
+  au FileType markdown call WordProcessorMode()
   au FileType help set nospell
 
   " TODO, put these in a plugin
