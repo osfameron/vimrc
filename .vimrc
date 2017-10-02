@@ -2,11 +2,13 @@
 colo desert " temporary, to appease Vundle
 filetype on " workaround for osx to appease git re non-zero exit
 filetype off
-set rtp+=~/.vim/bundle/Vundle.vim
+set rtp+=~/.vim/bundle/vundle/
 call vundle#begin()
 Plugin 'gmarik/vundle'
 
 let localleader='\\'
+
+Plugin 'csv.vim'
 
 " Ack
 Plugin 'ack.vim'
@@ -120,7 +122,20 @@ Plugin 'tpope/vim-commentary'
 Plugin 'HakimCassimallyBBC/xqueryvim'
 Plugin 'bkad/CamelCaseMotion'
 
+" Jekyll
 Plugin 'PProvost/vim-markdown-jekyll'
+
+" clojure
+" Plugin 'guns/vim-sexp'
+" let g:sexp_enable_insert_mode_mappings = 0 " because it's an abomination
+Plugin 'kien/rainbow_parentheses.vim'
+" Plugin 'tpope/vim-sexp-mappings-for-regular-people'
+Plugin 'tpope/vim-fireplace'
+Plugin 'guns/vim-clojure-static'
+Plugin 'guns/vim-clojure-highlight'
+Plugin 'bhurlow/vim-parinfer'
+
+Plugin 'sjl/gundo.vim'
 
 call vundle#end() 
 filetype plugin indent on
@@ -175,6 +190,9 @@ if has("autocmd")
   au FileType text call WordProcessorMode()
   au FileType markdown call WordProcessorMode()
   au FileType help set nospell
+
+  au FileType python set ts=4
+  au FileType python set sw=4
 
   " TODO, put these in a plugin
   au BufRead,BufNewFile *.t set filetype=perl
