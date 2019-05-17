@@ -111,8 +111,10 @@ map <c-n> :bn<CR>
 
 command! Close if &buftype == 'quickfix' | cclose | else | bd | endif
 map <c-x> :Close<CR>
-map <c-j> :cnext<CR>
-map <c-k> :cprev<CR>
+command! PrevQflike if len(getqflist()) | cprev | else | lprev | endif
+command! NextQflike if len(getqflist()) | cprev | else | lprev | endif
+map <c-j> :NextQflike<CR>
+map <c-k> :PrevQflike<CR>
 
 " file browsing
 map <C-t> :Explore .<CR>
