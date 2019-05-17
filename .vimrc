@@ -6,7 +6,7 @@ set rtp+=~/.vim/bundle/vundle/
 call vundle#begin()
 Plugin 'gmarik/vundle'
 
-let localleader='\\'
+let localleader=','
 
 Plugin 'csv.vim'
 
@@ -14,6 +14,12 @@ Plugin 'csv.vim'
 Plugin 'ack.vim'
 noremap <LocalLeader># "ayiw:Ack <C-r>a<CR>
 vnoremap <LocalLeader># "ay:Ack <C-r>a<CR>
+
+noremap ,t :tabNext<CR>
+
+Plugin 'junegunn/fzf'
+Plugin 'sunaku/vim-shortcut'
+
 
 " <C-f> to navigate files, and <C-b> for buffers, <C-m> for MRU
 Plugin 'kien/ctrlp.vim'
@@ -26,40 +32,7 @@ let g:ctrlp_working_path_mode = '0' " don't do anything clever with root directo
 " Based on https://gist.github.com/rene-aguirre/3715215 config for ctrlp
 " open files extra files in hidden buffers
 let g:ctrlp_open_multiple_files = '1jr'
-" indexing speed up
-" NB: need to delete files-list to refresh!  This may work with e.g. PIPs
-" dev workflow, but not other projects (otoh, it's bloody fast)
-" perhaps could delegate to a small shell script that recreates if too old?
 
-" if has("unix")
-" \ 1: ['.git', 'cd %s && git ls-files'],
-" \ 'fallback': 'find %s -type f'
-"let g:ctrlp_user_command = {
-"    \ 'types': {
-"        \ 1: ['files-list', 'cat %s/files-list'],
-"        \ 2: ['.git', 'cd %s && git ls-files | tee files-list'],
-"        \ 3: ['.hg', 'hg --cwd %s locate -I . | tee %s/files-list'],
-"        \ 4: ['.svn', 'ack -f %s | tee %s/files-list'],
-"        \ },
-"    \ 'fallback': 'ack -f %s | tee %s/files-list'
-"    \ }
-"else
-"" windows
-"let ctrlp_filter_greps = "".
-"    \ 'grep -iv "\\.\(' .
-"    \ 'exe\|jar\|class\|swp\|swo\|log\|so\|o\|pyc\|jpe?g\|png\|gif\|mo\|po' .
-"    \ 'o\|a\|obj\|com\|dll\|exe\|tmp\|docx\|pdf\|jpg\|png\|vsd\|zip' .
-"    \ '\)$"'
-"let g:ctrlp_user_command = {
-"    \ 'types': {
-"        \ 1: ['.git', "cd %s && git ls-files | " . ctrlp_filter_greps],
-"        \ 2: ['.hg', 'hg --cwd %s locate -I .'],
-"        \ 3: ['.svn', 'svn status %s -q -v --xml | grep -e "\\s*path=" | sed ' . "'" . 's/\\s*path="\(.*\)".*$/\1/' . "' | " . ctrlp_filter_greps],
-"        \ },
-"    \ 'fallback': 'dir %s /-n /b /s /a-d'
-"    \ }
-"endif
-"
 " Haskell stuffs
 Plugin 'Shougo/vimproc.vim' " requires manual `make` afterwards
 Plugin 'eagletmt/ghcmod-vim'
@@ -83,6 +56,10 @@ let g:syntastic_always_populate_loc_list = 1
 let g:syntastic_auto_loc_list = 0
 let g:syntastic_check_on_open = 0
 let g:syntastic_check_on_wq = 0
+let g:syntastic_mode_map = {
+        \ "mode": "active",
+        \ "active_filetypes": ["perl", "clojure", "haskell"],
+        \ "passive_filetypes": ["python"] }
 
 map <C-t> :Explore .<CR>
 let g:netrw_list_hide='\v\~$|\.(o|swo|swp|pyc|wav|mp3|ogg|mk4|avi|pdf)$|(^|[/\\])\.(hg|git|bzr)($|[/\\])'
@@ -115,9 +92,6 @@ let g:gitgutter_override_sign_column_highlight = 1
 Plugin 'vim-perl/vim-perl'
 Plugin 'jQuery'
 
-Plugin 'tpope/vim-surround'
-Plugin 'tpope/vim-commentary'
-
 " xquery
 Plugin 'HakimCassimallyBBC/xqueryvim'
 Plugin 'bkad/CamelCaseMotion'
@@ -135,7 +109,12 @@ Plugin 'guns/vim-clojure-static'
 Plugin 'guns/vim-clojure-highlight'
 Plugin 'bhurlow/vim-parinfer'
 
-Plugin 'sjl/gundo.vim'
+" I don't actually use these so...
+" Plugin 'sjl/gundo.vim'
+" Plugin 'diepm/vim-rest-console'
+" Plugin 'tpope/vim-surround'
+" Plugin 'tpope/vim-commentary'
+
 
 call vundle#end() 
 filetype plugin indent on
@@ -249,3 +228,5 @@ endif
 set listchars=tab:>\ ,trail:\ 
 set list
 hi SpecialKey ctermbg=red ctermfg=black guibg=red guifg=black
+
+set diffopt=vertical
