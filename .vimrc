@@ -127,8 +127,10 @@ imap <F1> <ESC>
 
 " toggle
 set pastetoggle=<F3>
-map <F4> :set number!<CR>
-map <F5> :set list!<CR>
+map <F4> :set number! <CR>
+" as list isn't always obvious
+command! ListToggle set list! | set list?
+map <F5> :ListToggle <CR>
 
 set scrolloff=3 " nice for code, but not so nice for help
 set diffopt=vertical
@@ -138,8 +140,7 @@ set diffopt=vertical
 set clipboard+=unnamed
 
 " indicator chars
-set listchars=tab:>\ ,trail:\ 
-hi SpecialKey ctermbg=red ctermfg=black guibg=red guifg=black
+set listchars=tab:→\ ,trail:␣
 
 " make this file easy to edit and source
 " ======================================
@@ -163,21 +164,23 @@ endfu
 
 " autocommands
 " ============
-
 if has("autocmd")
   " Avoid showing trailing whitespace when in insert mode
-  au InsertEnter * :set listchars-=trail:_
-  au InsertLeave * :set listchars+=trail:_
+  " au InsertEnter * :set listchars-=trail:␣
+  " au InsertLeave * :set listchars+=trail:␣
 
   " In Makefiles, use real tabs, not tabs expanded to spaces
-  au FileType make set noexpandtab
+  augroup VimRCDefaults
+      au!
+      au FileType make set noexpandtab
 
-  au FileType text call WordProcessorMode()
-  au FileType markdown call WordProcessorMode()
-  au FileType help set nospell
+      au FileType text call WordProcessorMode()
+      au FileType markdown call WordProcessorMode()
+      au FileType help set nospell
 
-  au FileType python set ts=4
-  au FileType python set sw=4
+      au FileType python set ts=4
+      au FileType python set sw=4
+  augroup END
 
   augroup AutoReloadVimRC
     au!
